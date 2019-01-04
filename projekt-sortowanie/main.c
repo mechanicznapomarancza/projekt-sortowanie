@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#define TAB_MAX 20000
+#define TAB_MAX 2000
 #define TIME_MULT 1000000
 //struktura statystyk
 typedef struct
