@@ -48,6 +48,7 @@ int main() {
     
     //deleteStats(stat);
     bubbleSort(tab,stat);
+    heapSort(tab, stat);
     
     getStatistics(stat);
     
@@ -92,7 +93,6 @@ void getStatistics(statistics *s)
 void bubbleSort(int tab[],statistics *s)
 {
     int max_idx; //indeks najwiekszego elementu
-    int comp = 0; //zlicza porownania
     clock_t start, stop;
     float time;
     
@@ -104,7 +104,7 @@ void bubbleSort(int tab[],statistics *s)
         {
             if (tab[max_idx]<tab[j])
                 max_idx = j;
-            comp++; //porownuje elementy
+            s->bubble++; //porownuje elementy
             
         }
         //zamiana wartosci
@@ -115,8 +115,54 @@ void bubbleSort(int tab[],statistics *s)
     stop = clock();
     time = TIME_MULT*(stop-start)/CLOCKS_PER_SEC;
     
-    s->bubble = comp;
     s->bubble_t = time;
     
+    return;
+}
+
+//metody pomocnicze do kopca
+int max (int tab[],int n, int i, int j, int k, statistics *s) {
+    int m = i;
+    if (j < n && tab[j] > tab[m]) {
+        m = j;
+    }
+    if (k < n && tab[k] > tab[m]) {
+        m = k;
+    }
+    s->heap+=4;
+    return m;
+}
+void downheap (int tab[], int n, int i, statistics *s) {
+    while (1) {
+        int j = max(tab, n, i, 2 * i + 1, 2 * i + 2,s);
+        s->heap+=1; //w zwiazku z if-em ponizej
+        if (j == i) {
+            break;
+        }
+        int t = tab[i];
+        tab[i] = tab[j];
+        tab[j] = t;
+        i = j;
+    }
+}
+
+void heapSort (int tab[], statistics *s) {
+    int i;
+    clock_t start, stop;
+    float time;
+    start = clock();
+    for (i = (TAB_MAX - 2) / 2; i >= 0; i--) {
+        downheap(tab, TAB_MAX, i,s);
+    }
+    for (i = 0; i < TAB_MAX; i++) {
+        int t = tab[TAB_MAX - i - 1];
+        tab[TAB_MAX - i - 1] = tab[0];
+        tab[0] = t;
+        downheap(tab, TAB_MAX - i - 1, 0,s);
+    }
+    stop = clock();
+    time = TIME_MULT*(stop-start)/CLOCKS_PER_SEC;
+    
+    s->heap_t = time;
     return;
 }
