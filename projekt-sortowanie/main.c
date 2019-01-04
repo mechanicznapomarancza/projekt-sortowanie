@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#define TAB_MAX 2000
+#define TAB_MAX 20000
 #define TIME_MULT 1000000
 //struktura statystyk
 typedef struct
@@ -24,12 +24,14 @@ void fillTab(int tab[]);
 void deleteStats(statistics *s);
 //funkcje sortowania zwracaja ilosc porownan
 void bubbleSort(int tab[],statistics *s);
-void heapSort(int tab[],statistics *s); //pamietac o ->
-void quickSort(int tab[],statistics *s);
+void heapSort(int tab[],statistics *s);
+void quickSort(int tab[],int first,int last,statistics *s);
 void mergeSort(int tab[],statistics *s);
-
-
 void getStatistics(statistics *s);
+
+
+
+
 
 int main() {
     int tab[TAB_MAX];
@@ -49,10 +51,17 @@ int main() {
     //deleteStats(stat);
     bubbleSort(tab,stat);
     heapSort(tab, stat);
+    quickSort(tab, 0, TAB_MAX-1, stat);
     
     getStatistics(stat);
     
 }
+
+
+
+
+
+
 
 void fillTab(int tab[])
 {
@@ -129,13 +138,13 @@ int max (int tab[],int n, int i, int j, int k, statistics *s) {
     if (k < n && tab[k] > tab[m]) {
         m = k;
     }
-    s->heap+=4;
+    s->heap+=2;
     return m;
 }
 void downheap (int tab[], int n, int i, statistics *s) {
     while (1) {
         int j = max(tab, n, i, 2 * i + 1, 2 * i + 2,s);
-        s->heap+=1; //w zwiazku z if-em ponizej
+        
         if (j == i) {
             break;
         }
@@ -165,4 +174,47 @@ void heapSort (int tab[], statistics *s) {
     
     s->heap_t = time;
     return;
+}
+
+void quickSort(int tab[],int first,int last,statistics *s){
+    int i, j, pivot, temp;
+    clock_t start, stop;
+    float time;
+    start = clock();
+    if(first<last){
+        pivot=first;
+        i=first;
+        j=last;
+        
+        while(i<j){
+            while(tab[i]<=tab[pivot]&&i<last)
+                {
+                    i++;
+                    s->quick++;
+                }
+            while(tab[j]>tab[pivot])
+                {
+                    j--;
+                    s->quick++;
+                }
+           
+            if(i<j){
+                temp=tab[i];
+                tab[i]=tab[j];
+                tab[j]=temp;
+            }
+            
+        }
+        
+        temp=tab[pivot];
+        tab[pivot]=tab[j];
+        tab[j]=temp;
+        quickSort(tab,first,j-1,s);
+        quickSort(tab,j+1,last,s);
+        
+    }
+    stop = clock();
+    time = TIME_MULT*(stop-start)/CLOCKS_PER_SEC;
+    
+    s->quick_t = time;
 }
