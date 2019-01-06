@@ -26,7 +26,7 @@ void deleteStats(statistics *s);
 void bubbleSort(int tab[],statistics *s);
 void heapSort(int tab[],statistics *s);
 void quickSort(int tab[],int first,int last,statistics *s);
-void mergeSort(int tab[],statistics *s);
+void mergeSort(int tab[], int l, int r,statistics *s);
 void getStatistics(statistics *s);
 
 
@@ -52,6 +52,7 @@ int main() {
     bubbleSort(tab,stat);
     heapSort(tab, stat);
     quickSort(tab, 0, TAB_MAX-1, stat);
+    mergeSort(tab, 0, TAB_MAX-1, stat);
     
     getStatistics(stat);
     
@@ -153,6 +154,7 @@ void downheap (int tab[], int n, int i, statistics *s) {
         tab[j] = t;
         i = j;
     }
+    return;
 }
 
 void heapSort (int tab[], statistics *s) {
@@ -217,4 +219,85 @@ void quickSort(int tab[],int first,int last,statistics *s){
     time = TIME_MULT*(stop-start)/CLOCKS_PER_SEC;
     
     s->quick_t = time;
+    return;
+}
+
+
+
+void merge(int arr[], int l, int m, int r, statistics *s)
+{
+    int i, j, k;
+    int n1 = m - l + 1;
+    int n2 =  r - m;
+    
+    // tymczasowe tablice L i R o rozmiarach n1 i n2
+    int L[n1], R[n2];
+    
+    // kopiowanie danych do podtablic
+    for (i = 0; i < n1; i++)
+        L[i] = arr[l + i];
+    for (j = 0; j < n2; j++)
+        R[j] = arr[m + 1+ j];
+    
+    // scalanie tablic
+    i = 0;
+    j = 0;
+    k = l;
+    while (i < n1 && j < n2)
+    {
+        if (L[i] <= R[j])
+        {
+            arr[k] = L[i];
+            i++;
+        }
+        else
+        {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+        s->merge++;
+    }
+    
+    // kopiowanie pozostalych elementow lewej tablicy L (jesli zostaly)
+    while (i < n1)
+    {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+    
+    // kopiowanie pozostalych elementow prawej tablicy R (jesli zostaly)
+    while (j < n2)
+    {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+    return;
+}
+
+//l - lewy kraniec sortowanego przedzialu
+//p - prawy kraniec sortowanego przedzialu
+void mergeSort(int tab[], int l, int r, statistics *s)
+{
+    clock_t start, stop;
+    float time;
+    start = clock();
+    if (l < r)
+    {
+        // miejsce podzialu tablic na polowy
+        int m = l+(r-l)/2;
+        
+        // Sortowanie polowek
+        mergeSort(tab, l, m, s);
+        mergeSort(tab, m+1, r, s);
+        
+        merge(tab, l, m, r, s);
+    }
+    stop = clock();
+    time = TIME_MULT*(stop-start)/CLOCKS_PER_SEC;
+    
+    s->merge_t = time;
+    return;
 }
