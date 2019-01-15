@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #define TAB_MAX 2000
-#define TIME_MULT 1000000
+#define TIME_MULT 1000000 //zamiana na mikrosekundy
 //struktura statystyk
 typedef struct
 {
@@ -21,7 +21,6 @@ typedef struct
 
 //predefinicje funkcji
 void fillTab(int tab[]);
-void deleteStats(statistics *s);
 //funkcje sortowania zwracaja ilosc porownan
 void bubbleSort(int tab[],statistics *s);
 void heapSort(int tab[],statistics *s);
@@ -48,7 +47,7 @@ int main() {
     };
     statistics *stat = &s;
     
-    //deleteStats(stat);
+    
     bubbleSort(tab,stat);
     heapSort(tab, stat);
     quickSort(tab, 0, TAB_MAX-1, stat);
@@ -71,18 +70,7 @@ void fillTab(int tab[])
         tab[i] = (rand() % (4*TAB_MAX+1)) - 2*TAB_MAX; //losuje liczby z przedzialu <-2TAB_MAX;2TAB_MAX>
     return;
 }
-void deleteStats(statistics *s)
-{
-    s->bubble = 0;
-    s->bubble_t = 0.0;
-    s->heap = 0;
-    s->heap_t = 0.0;
-    s->merge = 0;
-    s->merge_t = 0.0;
-    s->quick = 0;
-    s->quick_t = 0.0;
-    
-}
+
 void getStatistics(statistics *s)
 {
     printf("\nLiczba porownan:");
